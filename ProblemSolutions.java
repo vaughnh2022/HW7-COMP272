@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   Vaughn Hartzell 001
  *
  *   This java file contains the problem solutions for the methods selectionSort,
  *   mergeSortDivisibleByKFirst, asteroidsDestroyed, and numRescueCanoes methods.
@@ -8,6 +8,9 @@
  ********************************************************************/
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Stack;
+import java.util.Queue;
 
 public class ProblemSolutions {
 
@@ -33,17 +36,32 @@ public class ProblemSolutions {
     }
 
     public static void selectionSort(int[] values, boolean ascending ) {
-
         int n = values.length;
-
         for (int i = 0; i < n - 1; i++) {
-
-            // YOU CODE GOES HERE -- COMPLETE THE INNER LOOP OF THIS
-            // "SELECTION SORT" ALGORITHM.
-            // DO NOT FORGET TO ADD YOUR NAME / SECTION ABOVE
-
+                int min=values[i];
+                int spot=-1;
+                for(int a=i+1;a<n;a++){
+                    if(values[a]<min){
+                        min=values[a];
+                        spot=a;
+                    }
+                }
+                if(spot!=-1){
+                    values[spot]=values[i];
+                    values[i]=min;
+                }
         }
-
+        if(!ascending){
+            Stack<Integer> sta = new Stack<>();
+            for(int a=0;a<n;a++){
+                sta.push(values[a]);
+            }
+            int x=0;
+            while(!sta.isEmpty()){
+                values[x]=sta.pop();
+                x++;
+            }
+        }
     } // End class selectionSort
 
 
@@ -90,20 +108,49 @@ public class ProblemSolutions {
      * The merging portion of the merge sort, divisible by k first
      */
 
-    private void mergeDivisbleByKFirst(int arr[], int k, int left, int mid, int right)
-    {
-        // YOUR CODE GOES HERE, THIS METHOD IS NO MORE THAN THE STANDARD MERGE PORTION
-        // OF A MERGESORT, EXCEPT THE NUMBERS DIVISIBLE BY K MUST GO FIRST WITHIN THE
-        // SEQUENCE PER THE DISCUSSION IN THE PROLOGUE ABOVE.
-        //
-        // NOTE: YOU CAN PROGRAM THIS WITH A SPACE COMPLEXITY OF O(1) OR O(N LOG N).
-        // AGAIN, THIS IS REFERRING TO SPACE COMPLEXITY. O(1) IS IN-PLACE, O(N LOG N)
-        // ALLOCATES AUXILIARY DATA STRUCTURES (TEMPORARY ARRAYS). IT WILL BE EASIER
-        // TO CODE WITH A SPACE COMPLEXITY OF O(N LOG N), WHICH IS FINE FOR PURPOSES
-        // OF THIS PROGRAMMING EXERCISES.
-
-        return;
-
+    private void mergeDivisbleByKFirst(int arr[], int k, int left, int mid, int right){
+        int[] leftArray = new int[mid-left+1];
+        int[] rightArray = new int[right-mid];
+        int a;
+        for(a=0;a<leftArray.length;a++){
+            leftArray[a]=arr[left+a];
+        }
+        for(a=0;a<rightArray.length;a++){
+            rightArray[a]=arr[mid+a+1];
+        }
+        a=0;
+        int b=0;
+        int real=left;
+        Queue<Integer> sta = new LinkedList<>();
+        while(a<leftArray.length&&b<rightArray.length){
+            if(leftArray[a] % k == 0){
+                arr[real++]=leftArray[a++];
+            } else if(rightArray[b] % k == 0){
+                arr[real++]=rightArray[b++];
+            } else {
+                int pusher = leftArray[a]<rightArray[b] ? leftArray[a++] : rightArray[b++];
+                sta.add(pusher);
+            }
+        }
+        while(a<leftArray.length){
+            if(leftArray[a] % k == 0){
+                arr[real++]=leftArray[a++];
+            } else {
+                int pusher2 = leftArray[a++];
+                sta.add(pusher2);
+            }
+        } 
+        while(b<rightArray.length){
+            if(rightArray[b] % k == 0){
+                arr[real++]=rightArray[b++];
+            } else {
+                int pusher3=rightArray[b++];
+                sta.add(pusher3);
+            }
+        }
+        while(!sta.isEmpty()){
+            arr[real++]=sta.poll();
+        }
     }
 
 
@@ -154,9 +201,16 @@ public class ProblemSolutions {
 
     public static boolean asteroidsDestroyed(int mass, int[] asteroids) {
 
-        // YOUR CODE GOES HERE, CONSIDER USING ARRAYS.SORT()
+        Arrays.sort(asteroids);
+        for(int a : asteroids){
+            if(a>mass){
+                return false;
+            } else {
+                mass+=a;
+            }
+        }
 
-        return false;
+        return true;
 
     }
 
@@ -191,11 +245,21 @@ public class ProblemSolutions {
      */
 
     public static int numRescueSleds(int[] people, int limit) {
-
-        // YOUR CODE GOES HERE, CONSIDER USING ARRAYS.SORT
-
-        return -1;
-
+        Arrays.sort(people);
+        int left=0;
+        int right=people.length-1;
+        int ans=0;
+        while(left<=right){
+            if(left!=right&&limit>=people[left]+people[right]){
+                left++;
+                right--;
+                ans++;
+            }  else {
+                right--;
+                ans++;
+            }
+        }
+        return ans;
     }
 
 } // End Class ProblemSolutions
